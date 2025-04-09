@@ -7,15 +7,23 @@ from app.services.product_lookup import get_product_category
 model = None
 scaler_data = None
 
-# funcion para cargar el modelo y el scaler
 def load_model_and_scaler():
     global model, scaler_data
     if model is None or scaler_data is None:
         print("Cargando el modelo y el scaler...")
         model = tf.keras.models.load_model('ml_model/modelo_ventas_rossmann.keras')
         scaler_data = joblib.load('ml_model/scaler_data.pkl')
+        
+        # Verifica que las claves existan en el scaler_data
+        if "product_categories" not in scaler_data:
+            raise ValueError("No se encontró la clave 'product_categories' en el scaler_data.")
+        if "feature_order" not in scaler_data or "numeric_features" not in scaler_data or "scaler" not in scaler_data:
+            raise ValueError("Faltan claves necesarias en el scaler_data.")
     else:
         print("El modelo ya está cargado.")
+    print(scaler_data)
+
+
 def predict_sales(store_id, promo, school_holiday, date, store_type, assortment, state_holiday, product_name, weather, sentiment_score):
     # obtener la categoría del producto desde s nombre
     product_category = get_product_category(product_name)
