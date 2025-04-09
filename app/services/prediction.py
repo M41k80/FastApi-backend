@@ -3,10 +3,19 @@ import joblib
 import pandas as pd
 from app.services.product_lookup import get_product_category
 
-# Cargamos el modelo y los metadatos
-model = tf.keras.models.load_model('ml_model/modelo_ventas_rossmann.keras')
-scaler_data = joblib.load('ml_model/scaler_data.pkl')
+# variables globales para la carga perezosa
+model = None
+scaler_data = None
 
+# funcion para cargar el modelo y el scaler
+def load_model_and_scaler():
+    global model, scaler_data
+    if model is None or scaler_data is None:
+        print("Cargando el modelo y el scaler...")
+        model = tf.keras.models.load_model('ml_model/modelo_ventas_rossmann.keras')
+        scaler_data = joblib.load('ml_model/scaler_data.pkl')
+    else:
+        print("El modelo ya está cargado.")
 def predict_sales(store_id, promo, school_holiday, date, store_type, assortment, state_holiday, product_name, weather, sentiment_score):
     # obtener la categoría del producto desde s nombre
     product_category = get_product_category(product_name)
